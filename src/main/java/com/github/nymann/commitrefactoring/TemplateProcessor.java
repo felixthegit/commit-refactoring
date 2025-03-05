@@ -19,7 +19,9 @@ public class TemplateProcessor {
         String result = template;
         for (TemplateVariableProvider provider : providers) {
             String variable = "${" + provider.getVariableName() + "}";
-            result = result.replace(variable, provider.resolve(refactoring));
+            String resolved = provider.resolve(refactoring);
+            if (resolved != null)
+                result = result.replace(variable, resolved);
         }
         return result;
     }
