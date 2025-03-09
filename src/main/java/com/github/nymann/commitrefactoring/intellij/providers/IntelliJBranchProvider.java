@@ -2,10 +2,12 @@ package com.github.nymann.commitrefactoring.intellij.providers;
 
 import com.github.nymann.commitrefactoring.Refactoring;
 import com.github.nymann.commitrefactoring.TemplateVariableProvider;
+import com.intellij.dvcs.repo.Repository;
 import com.intellij.openapi.project.Project;
-import git4idea.repo.GitRepository;
 import git4idea.repo.GitRepositoryManager;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class IntelliJBranchProvider implements TemplateVariableProvider {
     private final @NotNull GitRepositoryManager repositoryManager;
@@ -21,9 +23,11 @@ public class IntelliJBranchProvider implements TemplateVariableProvider {
 
     @Override
     public String resolve(Refactoring refactoring) {
-        for (GitRepository repository : repositoryManager.getRepositories()) {
-            return repository.getCurrentBranchName();
-        }
-        return "unknown-branch";
-    }
+		return repositoryManager.getRepositories()
+				.stream()
+				.map(Repository::getCurrentBranchName)
+				.filter(Objects::nonNull)
+				.findFirst()
+				.orElse("unknown-branch");
+	}
 }
