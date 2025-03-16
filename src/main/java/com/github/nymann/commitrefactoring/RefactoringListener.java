@@ -1,11 +1,7 @@
-package com.github.nymann.commitrefactoring.intellij.listeners;
+package com.github.nymann.commitrefactoring;
 
-import com.github.nymann.commitrefactoring.CodeElement;
-import com.github.nymann.commitrefactoring.Refactoring;
-import com.github.nymann.commitrefactoring.RefactoringType;
 import com.github.nymann.commitrefactoring.intellij.CodeElementFactory;
 import com.github.nymann.commitrefactoring.intellij.IntelliJRefactoringService;
-import com.github.nymann.commitrefactoring.intellij.PsiElementFactory;
 import com.github.nymann.commitrefactoring.intellij.RefactoringTypeFactory;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -43,7 +39,7 @@ public class RefactoringListener implements RefactoringEventListener {
 
     @Override
     public void conflictsDetected(@NotNull String refactoringId, @NotNull RefactoringEventData conflictsData) {
-        CodeElement element = CodeElementFactory.create(PsiElementFactory.create(conflictsData));
+        CodeElement element = CodeElementFactory.create(conflictsData);
         logger.warn("Conflict detected: '" + refactoringId + "', data: " + element);
     }
 
