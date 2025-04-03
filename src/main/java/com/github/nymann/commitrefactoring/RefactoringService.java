@@ -16,15 +16,18 @@ public final class RefactoringService {
     private final Deque<Refactoring> redoStack = new ArrayDeque<>();
     private final TemplateProcessor refactoringMessageTemplate;
     private final TemplateProcessor defaultMessageTemplate;
+    private String textToAppendToCommit;
 
-    public RefactoringService(TemplateProcessor refactoringMessageTemplate, TemplateProcessor defaultMessageTemplate) {
+    public RefactoringService(TemplateProcessor refactoringMessageTemplate, TemplateProcessor defaultMessageTemplate, String textToAppendToCommit) {
         this.refactoringMessageTemplate = refactoringMessageTemplate;
         this.defaultMessageTemplate = defaultMessageTemplate;
+        this.textToAppendToCommit = textToAppendToCommit;
     }
 
     public RefactoringService() {
         refactoringMessageTemplate = new TemplateProcessor();
         defaultMessageTemplate = new TemplateProcessor();
+        textToAppendToCommit = "";
     }
 
     public void addRefactoring(Refactoring refactoring) {
@@ -58,6 +61,13 @@ public final class RefactoringService {
     }
 
     public String getCommitMessage() {
+        if(this.textToAppendToCommit.isEmpty()) {
+            return getRefactoringCommitMessage();
+        }
+        return getRefactoringCommitMessage() + this.textToAppendToCommit;
+    }
+
+    private String getRefactoringCommitMessage() {
         String message = refactorings
                 .stream()
                 .map(refactoringMessageTemplate::processTemplate)
@@ -70,5 +80,9 @@ public final class RefactoringService {
                     new CodeElement("N/A", UNKNOWN)));
         }
         return message;
+    }
+
+    public void setTextToAppendToCommit(String textToAppendToCommit) {
+        this.textToAppendToCommit = textToAppendToCommit;
     }
 }

@@ -22,7 +22,7 @@ public final class IntelliJRefactoringService implements SettingsChangeListener 
         List<TemplateVariableProvider> providers = List.of(new RefactoringProvider(), new IntelliJBranchProvider(project));
         refactoringMessageTemplate = new TemplateProcessor(settings.getTemplate(), providers);
         defaultMessageTemplate = new TemplateProcessor(settings.getDefaultCommitMessage(), providers);
-        this.refactoringService = new RefactoringService(refactoringMessageTemplate, defaultMessageTemplate);
+        this.refactoringService = new RefactoringService(refactoringMessageTemplate, defaultMessageTemplate, settings.getTextToAppendToCommit());
         commitMessageViaButtonOnly = settings.getCommitMessageViaButtonOnly();
 
         project
@@ -86,6 +86,7 @@ public final class IntelliJRefactoringService implements SettingsChangeListener 
         this.refactoringMessageTemplate.setTemplate(settings.getTemplate());
         this.defaultMessageTemplate.setTemplate(settings.getDefaultCommitMessage());
         this.setCommitMessageViaButtonOnly(settings.getCommitMessageViaButtonOnly());
+        this.refactoringService.setTextToAppendToCommit(settings.getTextToAppendToCommit());
         this.setCommitMessageOnPanel();
     }
 
