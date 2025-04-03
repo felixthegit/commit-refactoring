@@ -4,13 +4,13 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
-import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.FormBuilder;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.FlowLayout;
 
 public class CommitRefactoringSettingsUi implements Configurable {
     private JPanel panel;
@@ -28,87 +28,32 @@ public class CommitRefactoringSettingsUi implements Configurable {
     @Nullable
     @Override
     public JComponent createComponent() {
-        panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(resetButtonRow());
-        panel.add(templateRow());
-        panel.add(defaultMessage());
-        panel.add(commitMessageViaButtonOnlyRow());
-        panel.add(textToAppendToCommit());
+        templateField = new JTextField();
+        defaultCommitMessage = new JTextField();
+        textToAppendToCommit = new JBTextArea(5, 20);
+        textToAppendToCommit.setLineWrap(true);
+        textToAppendToCommit.setWrapStyleWord(true);
+        commitMessageViaButtonOnly = new JCheckBox();
+
+        panel = FormBuilder.createFormBuilder()
+                .addComponent(resetButtonRow())
+                .addLabeledComponent("Template", templateField)
+                .addLabeledComponent("Default message", defaultCommitMessage)
+                .addLabeledComponent("Set commit message via button only", commitMessageViaButtonOnly)
+                .addComponent(new JBLabel("Text to append to commit"), 10)
+                .addComponentFillVertically(new JBScrollPane(textToAppendToCommit), 1)
+                .getPanel();
 
         reset();
         return panel;
     }
 
-
-    private JPanel textToAppendToCommit() {
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.X_AXIS));
-
-        JBLabel label = new JBLabel("Default message:");
-
-        textToAppendToCommit = new JBTextArea(5, 20);
-        textToAppendToCommit.setLineWrap(true);
-        textToAppendToCommit.setWrapStyleWord(true);
-
-
-        JBScrollPane scrollPane = new JBScrollPane(textToAppendToCommit);
-        scrollPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, textToAppendToCommit.getPreferredSize().height));
-
-        inputPanel.add(label);
-        inputPanel.add(Box.createRigidArea(JBUI.size(10, 0)));
-        inputPanel.add(scrollPane);
-
-        return inputPanel;
-    }
-
-    private JPanel defaultMessage() {
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.X_AXIS));
-        JLabel label = new JLabel("Default message:");
-        defaultCommitMessage = new JTextField();
-        defaultCommitMessage.setMaximumSize(new Dimension(Integer.MAX_VALUE, defaultCommitMessage.getPreferredSize().height));
-
-        inputPanel.add(label);
-        inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        inputPanel.add(defaultCommitMessage);
-        return inputPanel;
-    }
-
-
     private @NotNull JPanel resetButtonRow() {
         JButton resetButton = new JButton("Reset");
         resetButton.addActionListener(e -> resetToDefault());
-
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.add(resetButton);
         return buttonPanel;
-    }
-
-    private @NotNull JPanel templateRow() {
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.X_AXIS));
-        JLabel label = new JLabel("Template:");
-        templateField = new JTextField();
-        templateField.setMaximumSize(new Dimension(Integer.MAX_VALUE, templateField.getPreferredSize().height));
-
-        inputPanel.add(label);
-        inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        inputPanel.add(templateField);
-        return inputPanel;
-    }
-
-    private @NotNull JPanel commitMessageViaButtonOnlyRow() {
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.X_AXIS));
-        JLabel label = new JLabel("Set commit message via button only:");
-        commitMessageViaButtonOnly = new JCheckBox();
-        commitMessageViaButtonOnly.setMaximumSize(new Dimension(Integer.MAX_VALUE, templateField.getPreferredSize().height));
-
-        inputPanel.add(label);
-        inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        inputPanel.add(commitMessageViaButtonOnly);
-        return inputPanel;
     }
 
     public void resetToDefault() {
@@ -119,17 +64,10 @@ public class CommitRefactoringSettingsUi implements Configurable {
 
     @Override
     public boolean isModified() {
-        CommitRefactoringSettings settings = CommitRefactoringSettings
-                .getInstance();
-        boolean templateHasChanged = !templateField
-                .getText()
-                .equals(settings
-                        .getTemplate());
-        boolean defaultCommitMessageHasChanged = !defaultCommitMessage
-                .getText()
-                .equals(settings.getDefaultCommitMessage());
+        CommitRefactoringSettings settings = CommitRefactoringSettings.getInstance();
+        boolean templateHasChanged = !templateField.getText().equals(settings.getTemplate());
+        boolean defaultCommitMessageHasChanged = !defaultCommitMessage.getText().equals(settings.getDefaultCommitMessage());
         boolean textToAppendToCommitHasChanged = !textToAppendToCommit.getText().equals(settings.getTextToAppendToCommit());
-
         boolean commitMessageViaButtonOnlyHasChanged = commitMessageViaButtonOnly.isSelected() != settings.getCommitMessageViaButtonOnly();
         return templateHasChanged || defaultCommitMessageHasChanged || commitMessageViaButtonOnlyHasChanged || textToAppendToCommitHasChanged;
     }
