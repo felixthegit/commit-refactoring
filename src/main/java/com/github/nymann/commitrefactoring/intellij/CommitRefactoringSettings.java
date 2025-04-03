@@ -52,6 +52,15 @@ public final class CommitRefactoringSettings implements PersistentStateComponent
         notifySettingsChanged();
     }
 
+    public void setTextToAppendToCommit(String textToAppendToCommit) {
+        state.textToAppendToCommit = textToAppendToCommit;
+        notifySettingsChanged();
+
+    }
+    public String getTextToAppendToCommit() {
+        return state.textToAppendToCommit;
+    }
+
     public boolean getCommitMessageViaButtonOnly() {
         return state.commitMessageViaButtonOnly;
     }
@@ -73,5 +82,6 @@ public final class CommitRefactoringSettings implements PersistentStateComponent
         public boolean commitMessageViaButtonOnly = false;
         public String template = "${refactoring}";
         public String defaultCommitMessage = "UNSAFE";
+        public String textToAppendToCommit = "";
     }
 }

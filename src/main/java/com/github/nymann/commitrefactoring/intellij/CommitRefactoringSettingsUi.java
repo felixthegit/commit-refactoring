@@ -1,6 +1,10 @@
 package com.github.nymann.commitrefactoring.intellij;
 
 import com.intellij.openapi.options.Configurable;
+import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.components.JBTextArea;
+import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,6 +16,7 @@ public class CommitRefactoringSettingsUi implements Configurable {
     private JPanel panel;
     private JTextField templateField;
     private JTextField defaultCommitMessage;
+    private JBTextArea textToAppendToCommit;
     private JCheckBox commitMessageViaButtonOnly;
 
     @Nls(capitalization = Nls.Capitalization.Title)
@@ -29,9 +34,32 @@ public class CommitRefactoringSettingsUi implements Configurable {
         panel.add(templateRow());
         panel.add(defaultMessage());
         panel.add(commitMessageViaButtonOnlyRow());
+        panel.add(textToAppendToCommit());
 
         reset();
         return panel;
+    }
+
+
+    private JPanel textToAppendToCommit() {
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.X_AXIS));
+
+        JBLabel label = new JBLabel("Default message:");
+
+        textToAppendToCommit = new JBTextArea(5, 20);
+        textToAppendToCommit.setLineWrap(true);
+        textToAppendToCommit.setWrapStyleWord(true);
+
+
+        JBScrollPane scrollPane = new JBScrollPane(textToAppendToCommit);
+        scrollPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, textToAppendToCommit.getPreferredSize().height));
+
+        inputPanel.add(label);
+        inputPanel.add(Box.createRigidArea(JBUI.size(10, 0)));
+        inputPanel.add(scrollPane);
+
+        return inputPanel;
     }
 
     private JPanel defaultMessage() {
@@ -100,9 +128,10 @@ public class CommitRefactoringSettingsUi implements Configurable {
         boolean defaultCommitMessageHasChanged = !defaultCommitMessage
                 .getText()
                 .equals(settings.getDefaultCommitMessage());
+        boolean textToAppendToCommitHasChanged = !textToAppendToCommit.getText().equals(settings.getTextToAppendToCommit());
 
         boolean commitMessageViaButtonOnlyHasChanged = commitMessageViaButtonOnly.isSelected() != settings.getCommitMessageViaButtonOnly();
-        return templateHasChanged || defaultCommitMessageHasChanged || commitMessageViaButtonOnlyHasChanged;
+        return templateHasChanged || defaultCommitMessageHasChanged || commitMessageViaButtonOnlyHasChanged || textToAppendToCommitHasChanged;
     }
 
     @Override
@@ -111,6 +140,7 @@ public class CommitRefactoringSettingsUi implements Configurable {
         instance.setTemplate(templateField.getText());
         instance.setDefaultCommitMessage(defaultCommitMessage.getText());
         instance.setCommitMessageViaButtonOnly(commitMessageViaButtonOnly.isSelected());
+        instance.setTextToAppendToCommit(textToAppendToCommit.getText());
     }
 
     @Override
@@ -119,6 +149,7 @@ public class CommitRefactoringSettingsUi implements Configurable {
         templateField.setText(settings.getTemplate());
         defaultCommitMessage.setText(settings.getDefaultCommitMessage());
         commitMessageViaButtonOnly.setSelected(settings.getCommitMessageViaButtonOnly());
+        textToAppendToCommit.setText(settings.getTextToAppendToCommit());
     }
 
     @Override
@@ -127,5 +158,6 @@ public class CommitRefactoringSettingsUi implements Configurable {
         templateField = null;
         defaultCommitMessage = null;
         commitMessageViaButtonOnly = null;
+        textToAppendToCommit = null;
     }
 }
