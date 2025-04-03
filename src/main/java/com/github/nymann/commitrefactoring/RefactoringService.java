@@ -24,6 +24,12 @@ public final class RefactoringService {
         this.textToAppendToCommit = textToAppendToCommit;
     }
 
+    public RefactoringService(TemplateProcessor refactoringMessageTemplate, TemplateProcessor defaultMessageTemplate) {
+        this.refactoringMessageTemplate = refactoringMessageTemplate;
+        this.defaultMessageTemplate = defaultMessageTemplate;
+        this.textToAppendToCommit = "";
+    }
+
     public RefactoringService() {
         refactoringMessageTemplate = new TemplateProcessor();
         defaultMessageTemplate = new TemplateProcessor();
@@ -61,7 +67,7 @@ public final class RefactoringService {
     }
 
     public String getCommitMessage() {
-        if(this.textToAppendToCommit.isEmpty()) {
+        if (this.textToAppendToCommit.isEmpty()) {
             return getRefactoringCommitMessage();
         }
         return getRefactoringCommitMessage() + this.textToAppendToCommit;
